@@ -1,3 +1,5 @@
+//
+//  StorageProvider
 //  Notes
 //
 //  Created by farshad on 9/4/18.
@@ -17,5 +19,4 @@ public class StorageProvider: ProtocolProvider {
             throw ProtocolProviderError.unsupportedUseCase
         }
     }
-
 }

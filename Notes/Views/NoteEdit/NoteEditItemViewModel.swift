@@ -20,6 +20,7 @@ class NoteEditItemViewModel {
     var attributedString: NSAttributedString {
         get {
             var output: NSAttributedString
+            //create title and subscript of editing content based on first new line, when ever user starts typing, we check for \n (enter | new line) then we change the size of the rest of the content and notify our view which something changes and view need to update the textview
             if let positionOfLineBreak = content.range(of: "\n", options: .literal, range: content.startIndex..<content.endIndex)?.lowerBound {
                 let title: String = String(content[..<positionOfLineBreak])
                 if positionOfLineBreak < content.endIndex {

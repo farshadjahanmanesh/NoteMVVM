@@ -129,13 +129,13 @@
 				F884E072213E770800479C81 /* Views */,
 				F884E06F213E767E00479C81 /* Common */,
 				F884E042213E6A9200479C81 /* AppDelegate.swift */,
+				F884E06D213E757000479C81 /* Bootstrap.swift */,
 				F884E044213E6A9200479C81 /* ViewController.swift */,
 				F884E046213E6A9200479C81 /* Main.storyboard */,
 				F884E04C213E6A9400479C81 /* Assets.xcassets */,
 				F884E04E213E6A9400479C81 /* LaunchScreen.storyboard */,
 				F884E051213E6A9400479C81 /* Info.plist */,
 				F884E049213E6A9200479C81 /* Notes.xcdatamodeld */,
-				F884E06D213E757000479C81 /* Bootstrap.swift */,
 			);
 			path = Notes;
 			sourceTree = "<group>";

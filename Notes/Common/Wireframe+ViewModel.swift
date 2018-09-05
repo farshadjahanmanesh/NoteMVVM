@@ -13,7 +13,7 @@ class Wireframe {
         self.useCaseProvider = useCaseProvider
     }
 }
-
+//based on kistarter idiea , each viewmodel need to know its input and its out put, and transforms the input to output
 protocol ViewModelProtocol {
     associatedtype Input
     associatedtype Output

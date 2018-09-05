@@ -11,7 +11,7 @@ import UIKit
 protocol NoteEditNavigator: class {
     func unwindToNote()
 }
-
+///initialize our edit view controller and generate our view controller and pass the requirements
 class NoteEditWireframe: Wireframe {
     private let navigator: NoteEditNavigator
     required init(useCaseProvider: ProtocolProvider, navigator: NoteEditNavigator) {

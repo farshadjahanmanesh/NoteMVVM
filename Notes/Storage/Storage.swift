@@ -13,8 +13,11 @@ enum StorageError: Error {
 
 final class Storage: NSObject {
     //RX Variables
+    //keep a reference to our current and editing note
     fileprivate var selectedNote: Variable<NoteProtocol?> = Variable(nil)
+    //a subject to subscribe for note changes
     fileprivate var allNotes: Variable<[NoteProtocol]> = Variable([NoteProtocol]())
+    //a subject of string which is editing
     fileprivate var editingContent: Variable<String> = Variable("")
     
     //CoreData Variables
@@ -22,11 +25,14 @@ final class Storage: NSObject {
     fileprivate let readContext: NSManagedObjectContext
     fileprivate let writeContext: NSManagedObjectContext
     override init() {
+        //managed object name
         let momdName = "Notes"
         guard let modelURL = Bundle(for: type(of: self)).url(forResource: momdName,
                                                              withExtension:"momd") else {
             fatalError("Error loading model from bundle")
         }
+        
+        //managed object model
         guard let mom = NSManagedObjectModel(contentsOf: modelURL) else {
             fatalError("Error initializing mom from: \(modelURL)")
         }
@@ -47,10 +53,11 @@ final class Storage: NSObject {
         super.init()
     }
     fileprivate func fetchNotes() {
-        let moc = self.readContext
+        let reading = self.readContext
         do {
             let request: NSFetchRequest<NoteObject> = NoteObject.fetchRequest()
-            let objects = try moc.fetch(request)
+            let objects = try reading.fetch(request)
+            //fetch items from storage and sort them based on editing date (recent/top)
             let notes: [NoteProtocol] = objects.compactMap({ (object) -> NoteProtocol? in
                 return object
             }).sorted(by: { (p1, p2) -> Bool in
@@ -69,14 +76,19 @@ final class Storage: NSObject {
 extension Storage: NoteListUseCase {
     func create() -> Completable {
         return Completable.create { [weak self] (completable) -> Disposable in
-            guard let moc = self?.writeContext else {
+            //get writing context
+            guard let writingContext = self?.writeContext else {
                 completable(.error(StorageError.NoteNotCreated))
                 return Disposables.create{}
             }
-            let item = NSEntityDescription.insertNewObject(forEntityName: "Note", into: moc) as! NoteObject
+            //create a new object
+            let item = NSEntityDescription.insertNewObject(forEntityName: "Note", into: writingContext) as! NoteObject
             item.content = ""
             do {
-                try moc.save()
+                //update our context
+                try writingContext.save()
+                
+                //notify our subscriptions and dispose this observable
                 DispatchQueue.main.async {
                     self?.allNotes.value.insert(item, at: 0)
                     self?.selectedNote.value = item
@@ -91,10 +103,12 @@ extension Storage: NoteListUseCase {
         }
     }
     func select(note: NoteProtocol) {
+        //notify our subscription that a note selected
         selectedNote.value = note
         editingContent.value = note.text
     }
     func notes() -> Observable<[NoteProtocol]> {
+        //fetch notes and create a observale of them
         fetchNotes()
         return Observable.of(self.allNotes.asObservable()).merge()
     }

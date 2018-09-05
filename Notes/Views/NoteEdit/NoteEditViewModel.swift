@@ -11,14 +11,21 @@ import RxSwift
 import RxCocoa
 
 class NoteEditViewModel: ViewModelProtocol {
+    //our inputs
     struct Input {
+        
         let trigger: Driver<Void>
+        //when user click on delete
         let deleteTrigger: Driver<Void>
+        //when user edit content
         let textTrigger: Driver<String>
     }
     struct Output {
+        //when edited and styled text is ready
         let text: Driver<NSAttributedString>
+        //when an update occurreds
         let textUpdate: Driver<Void>
+        //when delete completes
         let deleteUpdate: Driver<Void>
     }
     private let disposeBag = DisposeBag()
@@ -28,6 +35,8 @@ class NoteEditViewModel: ViewModelProtocol {
         self.useCase = useCase
         self.navigator = navigator
     }
+    //transform our inputs to outpouts
+    //get the input and notify when outputs ready
     func transform(input: Input) -> Output {
         let text = input.trigger.flatMapLatest { [weak self] (_) -> SharedSequence<DriverSharingStrategy, NSAttributedString> in
             return (self?.useCase.content.asDriver(onErrorJustReturn: "").map {
